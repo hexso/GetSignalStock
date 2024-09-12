@@ -27,6 +27,7 @@ class StockScraper:
         stock_codes: 주식 코드 리스트
         start_date: 데이터 시작일 (YYYY-MM-DD 형식)
         end_date: 데이터 종료일 (YYYY-MM-DD 형식)
+        return: 주식 데이터 dataframe형식으로 리턴
         """
 
         #시작일과 종료일의 경우 따로 설정하지 않으면 맨위의 날짜가 삽입된다.
@@ -49,7 +50,7 @@ class StockScraper:
 
     def download_stock_data(self, stock_datas):
         """
-        딕셔너리로 되어 있는 데이터를 파일로 저장하는 함수
+        딕셔너리로 되어 있는 형식{주식코드:dataframe}을 파일로 저장하는 함수
         :param stock_datas: 딕셔너리로 되어 있는 주식데이터
         :return:
         """
