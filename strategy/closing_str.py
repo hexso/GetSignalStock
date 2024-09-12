@@ -34,3 +34,14 @@ class ClosingPriceStrategy(Strategy):
                 self.sell(self.stock_data.index[i], today_open, self.position)  # 전량 매도
                 self.logger.debug(f"{self.stock_data.index[i]}: 종가 {today_open}에 매도")
 
+    def catch_signal(self, index=0):
+        """
+        :param index: 최신날짜를 기준으로 몇일전의 데이터를 볼것인가. 0이 오늘 1이 어제
+        :return: True인 경우 맞다.
+        """
+        today_data = self.stock_data.iloc[-1-index]
+        today_volume = today_data['Volume']
+        avg_volume = self.stock_data['Volume'].iloc[-31-index:-1-index].mean()
+        if today_volume >= avg_volume * self.threshold and self.position == 0:
+            return True
+        return False
