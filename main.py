@@ -30,6 +30,7 @@ if __name__ == '__main__':
             for strategy_name, final_value in results.items():
                 print(strategy_name, final_value)
 
+            closing_volume_strategy.plot_stock_data_with_signals()
 
 
 

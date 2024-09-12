@@ -1,4 +1,5 @@
 import logging
+import matplotlib.pyplot as plt
 
 CASH = 10000000 # 천만원
 
@@ -57,3 +58,43 @@ class Strategy:
         """
         self.portfolio_value = self.cash + (self.position * current_price)
         return self.portfolio_value
+
+    # 주식 데이터를 시각화하는 함수
+    def plot_stock_data_with_signals(self):
+        # 날짜를 인덱스에서 컬럼으로 변환 (그래프용)
+        stock_data = self.stock_data.reset_index()
+
+        # 그래프 생성
+        plt.figure(figsize=(12, 8))
+        plt.plot(stock_data['Date'], stock_data['Close'], label='Close Price', color='blue')
+
+        # 매수/매도 신호 추가
+        for trade in self.transactions:
+            trade_date, action, _, _ = trade
+
+            # 거래 날짜에 해당하는 주가 데이터를 찾기
+            trade_idx = stock_data[stock_data['Date'] == trade_date].index
+
+            if not trade_idx.empty:  # 해당 날짜가 데이터에 있는 경우에만 실행
+                price_at_trade = stock_data.loc[trade_idx[0], 'Close']
+
+                if action == 'BUY':
+                    # 매수 신호를 초록색 화살표로 표시
+                    plt.annotate(f'Buy: {price_at_trade}',
+                                 xy=(stock_data.loc[trade_idx[0], 'Date'], price_at_trade),
+                                 xytext=(stock_data.loc[trade_idx[0], 'Date'], price_at_trade + 200),
+                                 arrowprops=dict(facecolor='green', shrink=0.05))
+
+                elif action == 'SELL':
+                    # 매도 신호를 빨간색 화살표로 표시
+                    plt.annotate(f'Sell: {price_at_trade}',
+                                 xy=(stock_data.loc[trade_idx[0], 'Date'], price_at_trade),
+                                 xytext=(stock_data.loc[trade_idx[0], 'Date'], price_at_trade - 200),
+                                 arrowprops=dict(facecolor='red', shrink=0.05))
+        # 그래프 설정
+        plt.title('Stock Price with Buy/Sell Signals')
+        plt.xlabel('Date')
+        plt.ylabel('Price')
+        plt.legend()
+        plt.grid(True)
+        plt.show()
