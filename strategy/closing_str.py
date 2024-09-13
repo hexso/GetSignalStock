@@ -1,14 +1,16 @@
 from strategy.strategy import Strategy
 
 class ClosingPriceStrategy(Strategy):
-    def __init__(self, stock_data, threshold=3, stop_loss=0.98):
+    def __init__(self, stock_data, money=10000000, threshold=3, stop_loss=0.98, skip_change=0.2):
         """
         종가 매매법 전략 초기화
         stock_data: 주식 데이터
         threshold: 거래량 기준 (예: 최근 30일 평균 거래량 대비 3배 이상일 시 매수)
         stop_loss: 손절매 조건 (사용하지 않음, 하지만 필요할 경우 사용 가능)
+        그러나 상승률이 20% 이상인경우는 캐치하지 않는다.(이미 오른 종목)
         """
-        super().__init__(stock_data)
+        super().__init__(stock_data, money)
+        self.skip_change = skip_change
         self.threshold = threshold  # 매수 기준 임계치 (거래량 기준)
         self.stop_loss = stop_loss  # 손절매 기준 임계치 (사용하지 않음)
 
@@ -41,7 +43,8 @@ class ClosingPriceStrategy(Strategy):
         """
         today_data = self.stock_data.iloc[-1-index]
         today_volume = today_data['Volume']
+        today_change = today_data['Change']
         avg_volume = self.stock_data['Volume'].iloc[-31-index:-1-index].mean()
-        if today_volume >= avg_volume * self.threshold and self.position == 0:
+        if today_volume >= avg_volume * self.threshold and self.position == 0 and today_change < self.skip_change:
             return True
         return False
