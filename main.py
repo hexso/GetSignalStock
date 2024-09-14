@@ -9,6 +9,8 @@ import time
 from telegram_handler import telegtram_main
 from multiprocessing import Process
 
+OUTPUT_PATH = 'output/'
+
 def main_download_stock():
     #주식리스트에 있는 모든 데이터값을 stocks/ 폴더에 저장
     stock_scraper = StockScraper()
@@ -60,6 +62,12 @@ def test_catch_signal():
                 print(f"주식 {code}가 catch되었습니다.")
                 catched_stock.append(code)
 
+    import datetime
+    # 오늘 날짜 가져오기
+    today = datetime.date.today()
+    # 날짜를 문자열 형식으로 변환 (예: 2023-09-12)
+    formatted_date = today.strftime('%Y-%m-%d')
+
     stock_scraper = StockScraper()
     stock_codes_list = stock_scraper.read_stock_codes('stock_codes.txt')
     catched_stock = []
@@ -75,29 +83,35 @@ def test_catch_signal():
     print(f"선택된 주식들은 {catched_stock}입니다.")
 
     # 파일을 쓰기 모드로 열기
-    with open('catched_output.txt', 'w') as file:
+    with open(OUTPUT_PATH+formatted_date+'_catched_output.txt', 'w') as file:
         for item in catched_stock:
             file.write(f"{item}\n")
 
     return catched_stock
 
 def test_filter():
+    import datetime
+    # 오늘 날짜 가져오기
+    today = datetime.date.today()
+    # 날짜를 문자열 형식으로 변환 (예: 2023-09-12)
+    formatted_date = today.strftime('%Y-%m-%d')
+
     test_catch_signal()
     filter_stock_list = []
-    with open('catched_output.txt', 'r', encoding='utf-8') as file:
+    with open(OUTPUT_PATH+formatted_date+'_catched_output.txt', 'r', encoding='utf-8') as file:
         stock_codes = [line.strip() for line in file.readlines()]
         for stock_code in stock_codes:
             result = test_simulation(stock_code)
             if len(result) != 0:
                 filter_stock_list.append(result)
     print(filter_stock_list)
-    with open('filter_output.txt', 'w') as file:
+    with open(OUTPUT_PATH+formatted_date+'_filter_output.txt', 'w') as file:
         for item in filter_stock_list:
             file.write(f"{item}\n")
     return filter_stock_list
 
 def test_auto_filter():
-    schedule.every().day.at("15:35").do(test_filter)
+    schedule.every().day.at("15:00").do(test_filter)
     while True:
         schedule.run_pending()
         time.sleep(1)
@@ -120,7 +134,7 @@ if __name__ == '__main__':
     #test_filter()
 
     #이 함수를 통해 텔레그램 봇, 특정시간에 주식을 catch하는 함수를 동시에 실행한다
-    test_main()
+    #test_main()
     # 실행 시간 계산 및 출력
     end_time = time.time()
     elapsed_time = end_time - start_time
