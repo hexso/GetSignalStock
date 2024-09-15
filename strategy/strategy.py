@@ -15,6 +15,14 @@ class Strategy:
         self.portfolio_value = 0  # 포트폴리오 가치
         self.transactions = []  # 거래 기록
 
+        # 매수 관련 정보
+        self.total_investment = 0  # 총 매수 금액
+        self.total_shares = 0  # 총 매수한 주식 수량
+
+        #익절인지 손절인지 체크
+        self.profit_cnt = 0
+        self.loss_cnt = 0
+
         self.logger = logging.getLogger('my_logger')
         self.logger.setLevel(logging.DEBUG)
         # 파일 핸들러 생성 및 로그 포맷 설정
@@ -34,6 +42,10 @@ class Strategy:
             self.position += quantity
             self.cash -= price * quantity
             self.transactions.append((date, "BUY", price, quantity))
+
+            # 매수할 때 총 매수 금액과 총 주식 수량 업데이트
+            self.total_investment += price * quantity
+            self.total_shares += quantity
         else:
             self.logger.debug("잔액이 부족합니다.")
 
@@ -44,10 +56,16 @@ class Strategy:
         price: 매도 가격
         quantity: 매도 수량
         """
+        aver_price = self.total_shares/self.position
         if self.position >= quantity:
             self.position -= quantity
             self.cash += price * quantity
             self.transactions.append((date, "SELL", price, quantity))
+
+            if price < aver_price:
+                self.loss_cnt += 1
+            elif price > aver_price:
+                self.profit_cnt += 1
         else:
             self.logger.debug("보유한 주식이 부족합니다.")
 
@@ -59,7 +77,11 @@ class Strategy:
         if current_price == None:
             current_price = self.stock_data['Close'].iloc[-1]
         self.portfolio_value = self.cash + (self.position * current_price)
-        return self.portfolio_value
+        if self.profit_cnt + self.loss_cnt > 0:
+            self.win_rate = (self.profit_cnt)/(self.profit_cnt + self.loss_cnt) * 100
+        else :
+            self.win_rate = 0
+        return [self.portfolio_value, self.win_rate]
 
     # 주식 데이터를 시각화하는 함수
     def plot_stock_data_with_signals(self):

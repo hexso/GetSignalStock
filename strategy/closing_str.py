@@ -27,7 +27,7 @@ class ClosingPriceStrategy(Strategy):
 
             # 매수 조건: 오늘 거래량이 최근 30일 평균 거래량의 10배 이상일 경우
             if today_volume >= avg_volume * self.threshold and self.position == 0:
-                buy_quantity = self.cash / today_close
+                buy_quantity = self.cash // today_close
                 self.buy(self.stock_data.index[i], today_close, buy_quantity)  # 현재 살수 있는 최대한으로 매수
                 self.logger.debug(f"{self.stock_data.index[i]}: 종가 {today_close}에 매수 (거래량: {today_volume})")
 

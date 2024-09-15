@@ -47,7 +47,7 @@ def test_simulation(code=None):
             results = sim.get_results()
             for strategy_name, final_value in results.items():
                 print(strategy_name, final_value)
-                if final_value > money:
+                if final_value[0] > money: #현재 가치금액이 초기금액보다 높은 경우
                     selected_code_list.append(stock_code)
             #closing_volume_strategy.plot_stock_data_with_signals() # 해당 주식을 그리기
     return selected_code_list
@@ -112,9 +112,9 @@ def test_filter():
     catched_list = test_catch_signal()
     filter_list = catched_list
     for stock_code in catched_list[ClosingPriceStrategy.__name__]:
-            result = test_simulation(stock_code)
-            if len(result) != 0:
-                filter_list[ClosingPriceStrategy.__name__].remove(stock_code)
+        result = test_simulation(stock_code)
+        if len(result) != 0:
+            filter_list[ClosingPriceStrategy.__name__].remove(stock_code)
     print(filter_list)
 
     #filter된 리스트를 따로 아웃풋으로 저장
