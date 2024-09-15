@@ -51,11 +51,13 @@ class Strategy:
         else:
             self.logger.debug("보유한 주식이 부족합니다.")
 
-    def evaluate(self, current_price):
+    def evaluate(self, current_price=None):
         """
         현재 포트폴리오 가치를 평가하는 함수
         current_price: 현재 주가
         """
+        if current_price == None:
+            current_price = self.stock_data['Close'].iloc[-1]
         self.portfolio_value = self.cash + (self.position * current_price)
         return self.portfolio_value
 
