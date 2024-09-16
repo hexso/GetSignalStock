@@ -19,7 +19,7 @@ def main_download_stock():
     stock_datas = stock_scraper.get_stock_data(stock_codes_list)
     stock_scraper.download_stock_data(stock_datas) # 데이터를 csv파일로 저장
 
-def test_simulation(code=None):
+def test_simulation(strategy_class, code=None):
     """
     :param code: 주식코드
     :return:
@@ -41,8 +41,8 @@ def test_simulation(code=None):
             # 시뮬레이션 클래스 생성
             sim = Simulation(stock_data)
 
-            closing_volume_strategy = ClosingPriceStrategy(stock_data, money)
-            sim.add_strategy(closing_volume_strategy)
+            strategy_func = strategy_class(stock_data, money)
+            sim.add_strategy(strategy_func)
             sim.run()
             results = sim.get_results()
             for strategy_name, final_value in results.items():
@@ -111,8 +111,10 @@ def test_filter():
     formatted_date = today.strftime('%Y-%m-%d')
     catched_list = test_catch_signal()
     filter_list = catched_list
+
+    #closing_str의 경우 simul을 한번 돌리고 거른다.
     for stock_code in catched_list[ClosingPriceStrategy.__name__]:
-        result = test_simulation(stock_code)
+        result = test_simulation(ClosingPriceStrategy, stock_code)
         if len(result) != 0:
             filter_list[ClosingPriceStrategy.__name__].remove(stock_code)
     print(filter_list)
@@ -139,11 +141,14 @@ def test_main():
     p1.join()
     p2.join()
 
+def test_rsi_simul():
+    pass
+
 if __name__ == '__main__':
     # 시작 시간 기록
     start_time = time.time()
     #main_download_stock()
-    test_simulation('900280')
+    test_simulation(ClosingPriceStrategy,'900280')
     #test_catch_signal()
     #test_filter()
 
