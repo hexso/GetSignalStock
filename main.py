@@ -143,9 +143,9 @@ if __name__ == '__main__':
     # 시작 시간 기록
     start_time = time.time()
     #main_download_stock()
-    #test_simulation(stock_code)
+    test_simulation('900280')
     #test_catch_signal()
-    test_filter()
+    #test_filter()
 
     #이 함수를 통해 텔레그램 봇, 특정시간에 주식을 catch하는 함수를 동시에 실행한다
     #test_main()

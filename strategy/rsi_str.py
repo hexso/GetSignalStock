@@ -9,7 +9,7 @@ RSI가 20이하일 경우에 매수한후 매수가 기준 특정 %만큼 오르
 
 # RSI 기반 전략 클래스 정의
 class RSIStrategy(Strategy):
-    def __init__(self, stock_data, rsi_period=14, buy_rsi_threshold=20, sell_gain=0.1):
+    def __init__(self, stock_data, rsi_period=14, buy_rsi_threshold=25, sell_gain=0.1):
         """
         stock_data: 주식 데이터 (pandas DataFrame)
         rsi_period: RSI 계산 기간 (기본값: 14)

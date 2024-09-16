@@ -16,8 +16,8 @@ class Strategy:
         self.transactions = []  # 거래 기록
 
         # 매수 관련 정보
-        self.total_investment = 0  # 총 매수 금액
-        self.total_shares = 0  # 총 매수한 주식 수량
+        self.aver_price = 0  # 총 매수 금액
+        self.total_shares = 0
 
         #익절인지 손절인지 체크
         self.profit_cnt = 0
@@ -44,7 +44,7 @@ class Strategy:
             self.transactions.append((date, "BUY", price, quantity))
 
             # 매수할 때 총 매수 금액과 총 주식 수량 업데이트
-            self.total_investment += price * quantity
+            self.aver_price = (self.aver_price * self.total_shares) + (quantity * price) / (self.total_shares + quantity)
             self.total_shares += quantity
         else:
             self.logger.debug("잔액이 부족합니다.")
@@ -56,16 +56,19 @@ class Strategy:
         price: 매도 가격
         quantity: 매도 수량
         """
-        aver_price = self.total_shares/self.position
         if self.position >= quantity:
             self.position -= quantity
             self.cash += price * quantity
             self.transactions.append((date, "SELL", price, quantity))
-
-            if price < aver_price:
+            if price < self.aver_price:
                 self.loss_cnt += 1
-            elif price > aver_price:
+            elif price > self.aver_price:
                 self.profit_cnt += 1
+
+            # 매수할 때 총 매수 금액과 총 주식 수량 업데이트
+            self.total_shares -= quantity
+            print(self.cash)
+
         else:
             self.logger.debug("보유한 주식이 부족합니다.")
 
