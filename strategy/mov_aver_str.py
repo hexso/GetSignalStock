@@ -1,14 +1,14 @@
 from strategy import Strategy
 
 class MovingAverageStrategy(Strategy):
-    def __init__(self, stock_data, short_window=50, long_window=200):
+    def __init__(self, stock_data, money=10000000, short_window=50, long_window=200):
         """
         단순 이동 평균 전략 초기화
         stock_data: 주식 데이터
         short_window: 단기 이동 평균 기간
         long_window: 장기 이동 평균 기간
         """
-        super().__init__(stock_data)
+        super().__init__(stock_data, money)
         self.short_window = short_window
         self.long_window = long_window
         self.stock_data['Short_MA'] = self.stock_data['Close'].rolling(window=short_window).mean()

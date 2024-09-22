@@ -2,7 +2,7 @@ import FinanceDataReader as fdr
 import pandas as pd
 from datetime import datetime
 
-START_DATE = '2022-01-01'
+START_DATE = '2021-01-01'
 END_DATE = datetime.now().strftime('%Y-%m-%d')
 
 class StockScraper:

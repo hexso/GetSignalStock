@@ -28,10 +28,12 @@ def test_simulation(strategy_class, code=None):
     money = 10000000
     stock_scraper = StockScraper()
     selected_code_list = []
+    unselected_code_list = []
     if code == None:
         stock_codes_list = stock_scraper.read_stock_codes('stock_codes.txt')
     else:
         stock_codes_list = [str(code)]
+    total_price = 0
     for code in stock_codes_list:
         stock_datas = stock_scraper.get_stock_data([code])
         for stock_code, stock_data in stock_datas.items():
@@ -45,12 +47,16 @@ def test_simulation(strategy_class, code=None):
             sim.add_strategy(strategy_func)
             sim.run()
             results = sim.get_results()
+            total_price += results[strategy_func.__class__.__name__][0] - money
+            print(f"지금까지 소득 : {total_price}")
             for strategy_name, final_value in results.items():
                 print(strategy_name, final_value)
                 if final_value[0] > money: #현재 가치금액이 초기금액보다 높은 경우
                     selected_code_list.append(stock_code)
+                else:
+                    unselected_code_list.append(stock_code)
             #closing_volume_strategy.plot_stock_data_with_signals() # 해당 주식을 그리기
-    return selected_code_list
+    return selected_code_list, unselected_code_list
 
 def test_catch_signal():
     strategy_function_list = [ClosingPriceStrategy, RSIStrategy]
@@ -114,7 +120,7 @@ def test_filter():
 
     #closing_str의 경우 simul을 한번 돌리고 거른다.
     for stock_code in catched_list[ClosingPriceStrategy.__name__]:
-        result = test_simulation(ClosingPriceStrategy, stock_code)
+        result, unselected = test_simulation(ClosingPriceStrategy, stock_code)
         if len(result) != 0:
             filter_list[ClosingPriceStrategy.__name__].remove(stock_code)
     print(filter_list)
@@ -148,9 +154,11 @@ if __name__ == '__main__':
     # 시작 시간 기록
     start_time = time.time()
     #main_download_stock()
-    test_simulation(ClosingPriceStrategy,'900280')
+    #test_simulation(ClosingPriceStrategy,'900280')
+    #selected, unselected = test_simulation(RSIStrategy) #주식코드가 없을경우 전체 주식리스트로 시뮬레이션
+    #print(unselected)
     #test_catch_signal()
-    #test_filter()
+    test_filter()
 
     #이 함수를 통해 텔레그램 봇, 특정시간에 주식을 catch하는 함수를 동시에 실행한다
     #test_main()

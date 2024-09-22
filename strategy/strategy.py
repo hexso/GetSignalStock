@@ -67,7 +67,6 @@ class Strategy:
 
             # 매수할 때 총 매수 금액과 총 주식 수량 업데이트
             self.total_shares -= quantity
-            print(self.cash)
 
         else:
             self.logger.debug("보유한 주식이 부족합니다.")
